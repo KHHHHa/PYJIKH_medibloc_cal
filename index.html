@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>~ ASCVD 10-Year Risk Calculator ~</title>
+        <script>
+          // input을 활용한 ASCVD risk 계산
+            function cal(){
+              // input --> 숫자
+                var p_age = Number(document.getElementById("p_age").value);
+                var p_hdl = Number(document.getElementById("p_hdl").value);
+                var p_sBP = Number(document.getElementById("p_sBP").value);
+
+                var p_smo = Number(document.getElementById("p_smo").value);
+                var p_sex = Number(document.getElementById("p_sex").value);
+                var p_ht = Number(document.getElementById("p_ht").value);
+                var p_tchol = Number(document.getElementById("p_tchol").value);
+
+                // 변수 선언
+                var pp_hdl, pp_smo, pp_sBP, pp_tchol;
+                var frs, frs_hdl, frs_smo, frs_age, frs_tchol, frs_w, frs_m, tenR;
+
+                var pp_age = parseInt(p_age/10);
+                var ppp_age = parseInt(p_age/5);
+               
+                
+
+                // input을 활용한 frs 계산
+                // 1) frs_hdl 계산
+                if (p_hdl < 40){pp_hdl = 3;}
+                else if (p_hdl >= 60) {pp_hdl = 6;}
+                else {pp_hdl=parseInt(p_hdl/10);} 
+
+                var l_hdl = [2,1,0,-1];
+                console.log(l_hdl);
+                frs_hdl = l_hdl[pp_hdl-3];
+
+                document.getElementById("frs_hdl").value = frs_hdl;
+
+                // 2) frs_smo 계산
+                if (p_smo == 0){frs_smo = 0;}
+                
+                var l_smo = [[8,8,5,3,1,1],[9,9,7,4,2,1]];
+                console.log(l_smo);
+                frs_smo = l_smo[p_sex][pp_age-2];
+                
+                document.getElementById("frs_smo").value = frs_smo;
+
+                // 3) frs_age 계산
+                var l_age =[[-9,-9,-9,-4,0,3,6,8,10,11,12,13],[-7,-7,-7,-3,0,3,6,8,10,12,14,16]];
+                console.log(l_age);
+                frs_age = l_age [p_sex][ppp_age-4];
+
+                document.getElementById("frs_age").value = frs_age;
+
+                // 4) frs_sBP 계산
+                if (p_sBP < 120) {pp_sBP = 11;}
+                else if (p_sBP >= 160) {pp_sBP = 16;}
+                else {pp_sBP=p_sBP/10;}
+
+                var l_sBP = [[[0,0,1,1,1,2],[0,1,2,2,2,3]],[[0,1,2,3,3,4],[0,3,4,5,5,6]]];
+                console.log(l_sBP);
+                frs_sBP = l_sBP[p_sex][p_ht][pp_sBP-11];
+
+                document.getElementById("frs_sBP").value = frs_sBP;
+
+                // 5) frs_tchol 계산
+                if (p_tchol < 160) {pp_tchol = 3;}
+                else if (p_tchol >= 280) {pp_tchol = 7;}
+                else {pp_tchol=p_tchol/40;}
+
+                var l_tchol = [[[0,4,7,9,11],[0,4,7,9,11],[0,3,5,6,8],[0,2,3,4,5],[0,1,1,2,3],[0,0,0,1,1]],[[0,4,8,11,13],[0,4,8,11,13],[0,3,6,8,10],[0,2,4,5,7],[0,1,2,3,4],[0,1,1,2,2]]];
+                console.log(l_tchol);
+                frs_tchol = l_tchol[p_sex][pp_age-2][pp_tchol-3];
+
+                document.getElementById("frs_tchol").value = frs_tchol;
+
+                // 6) 10-year risk
+                var frs = frs_age + frs_tchol + frs_smo + frs_hdl + frs_sBP;
+                document.getElementById("frs").value = frs;
+
+                if (p_sex) {
+                  if (frs < 9){frs_w=0;}
+                  else if (frs <13) {frs_w = 1;}
+                  else if (frs >25) {frs_w=14;}
+                  else{frs_w = frs-11;}
+
+                  var l_frs_w = ['<1','1','2','2','3','4','5','6','8','11','14','17','22','27','>=30'];
+                  tenR = l_frs_w[frs_w];
+                }
+
+                else {
+                  if (frs < 0){frs_m=0;}
+                  else if (frs <5) {frs_m = 1;}
+                  else if (frs >16) {frs_m=14;}
+                  else{frs_w = frs-3;}
+                  var l_frs_w = ['<1','1','2','2','3','4','5','6','8','10','12','16','20','25','>=30'];
+                  tenR = l_frs_m[frs_m];
+                }
+
+               document.getElementById("tenR").value = tenR;
+
+                  
+            }
+
+            function reset(){
+                document.getElementById("p_age").value = "";
+                document.getElementById("p_hdl").value = "";
+                document.getElementById("p_sBP").value = "";
+                document.getElementById("p_tchol").value = "";
+
+                document.getElementById("p_smo").value = "";
+                document.getElementById("p_sex").value = "";
+                document.getElementById("p_ht").value = "";
+                
+                
+
+                document.getElementById("frs_hdl").value = "";
+                document.getElementById("frs_smo").value = "";
+                document.getElementById("frs_age").value = "";
+                document.getElementById("frs_sBP").value = "";
+                document.getElementById("frs_tchol").value = "";
+                document.getElementById("frs").value = "";
+                document.getElementById("tenR").value = "";
+            }
+        </script>
+    </head>
+    <body>
+        나이(20~79) : 
+        <br><input type="text" id="p_age"><br>
+        HDL: 
+        <br><input type="text" id="p_hdl"><br>
+        수축기 혈압(sBP): 
+        <br><input type="text" id="p_sBP"><br>
+        총콜레스테롤(tchol): 
+        <br><input type="text" id="p_tchol"><br>
+
+        흡연 중이면 1, 아니면 0 : 
+        <br><input type="text" id="p_smo"><br>
+        성별 - 여성 1, 남성 0 : 
+        <br><input type="text" id="p_sex"><br>
+        고혈압 치료 중이면 1, 아니면 0 : 
+        <br><input type="text" id="p_ht"><br>
+        
+       
+
+        <br><br>
+        <input type="button" value="계산하기" onclick="cal()">
+        <input type="button" value="초기화" onclick="reset()">
+        <br><br>
+
+        
+        결과(frs_age): 
+        <br><input type="text" id="frs_age"><br>
+        결과(frs_hdl): 
+        <br><input type="text" id="frs_hdl"><br>
+        결과(frs_sBP): 
+        <br><input type="text" id="frs_sBP"><br>
+        결과(frs_smo): 
+        <br><input type="text" id="frs_smo"><br>
+        결과(frs_tchol): 
+        <br><input type="text" id="frs_tchol"><br>
+        FRS 최종결과(frs): 
+        <br><input type="text" id="frs"><br><br>
+
+
+        최종결과(tenR): 
+        <br><input type="text" id="tenR"><br>
+        
+        
+    </body>
+</html>
